@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel do Mestre</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-zinc-950 text-zinc-50 min-h-screen p-6">
+
+    <div class="max-w-4xl mx-auto space-y-6">
+        <div class="flex justify-between items-center border-b border-zinc-800 pb-4">
+            <div>
+                <h1 class="text-lg font-medium tracking-wider text-zinc-300">Painel do Mestre</h1>
+                <p class="text-xs text-zinc-500">Sala: <span id="roomIdDisplay" class="font-mono text-zinc-400">...</span></p>
+            </div>
+            <button id="startStream" class="py-1.5 px-3 border border-zinc-700 hover:border-zinc-500 bg-zinc-900 text-xs rounded transition">
+                Ativar OBS Virtual Cam
+            </button>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="border border-zinc-800 bg-zinc-900/30 rounded-lg p-4 flex flex-col justify-between min-h-[300px]">
+                <span class="text-xs text-zinc-500 uppercase tracking-wider mb-2">Monitor de Transmissão</span>
+                <div class="bg-zinc-950 rounded border border-zinc-800 flex-grow flex items-center justify-center overflow-hidden">
+                    <video id="gmVideo" autoplay muted class="w-full h-full object-cover"></video>
+                </div>
+            </div>
+
+            <div class="space-y-6">
+                <div class="border border-zinc-800 bg-zinc-900/30 rounded-lg p-4">
+                    <h3 class="text-xs text-zinc-400 uppercase tracking-widest mb-3">Efeitos Sonoros (SFX)</h3>
+                    <div class="grid grid-cols-2 gap-2">
+                        <button onclick="playSFX('https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3')" class="py-2 px-3 bg-zinc-900 border border-zinc-800 hover:border-zinc-700 text-xs rounded text-left transition">
+                            ⚔️ Ataque de Espada
+                        </button>
+                        <button onclick="playSFX('https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3')" class="py-2 px-3 bg-zinc-900 border border-zinc-800 hover:border-zinc-700 text-xs rounded text-left transition">
+                            🔥 Bola de Fogo
+                        </button>
+                    </div>
+                </div>
+
+                <div class="border border-zinc-800 bg-zinc-900/30 rounded-lg p-4">
+                    <h3 class="text-xs text-zinc-400 uppercase tracking-widest mb-3">Enviar Imagem / Cenário</h3>
+                    <div class="flex gap-2">
+                        <input type="text" id="imageUrl" placeholder="URL da Imagem (.png, .jpg)" class="flex-grow bg-zinc-950 border border-zinc-800 rounded py-1.5 px-3 text-xs focus:outline-none focus:border-zinc-600">
+                        <button onclick="sendImage()" class="py-1.5 px-3 bg-zinc-100 text-zinc-950 hover:bg-zinc-200 text-xs font-medium rounded transition">
+                            Exibir
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="http://localhost:3000/socket.io/socket.io.js"></script>
+    <script>
+        // Conecta explicitamente ao seu servidor local que roda na porta 3000
+        const socket = io('http://localhost:3000');
+        const roomId = 'sala-secreta-123'; 
+        document.getElementById('roomIdDisplay').innerText = roomId;
+
+        socket.emit('join-room', roomId, 'gm');
+
+        let localStream;
+        document.getElementById('startStream').addEventListener('click', async () => {
+            try {
+                localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+                document.getElementById('gmVideo').srcObject = localStream;
+            } catch (err) {
+                console.error("Erro ao acessar a câmera: ", err);
+            }
+        });
+
+        function playSFX(url) {
+            socket.emit('play-audio', roomId, { type: 'sfx', url: url });
+        }
+
+        function sendImage() {
+            const url = document.getElementById('imageUrl').value.trim();
+            if(url) socket.emit('send-image', roomId, url);
+        }
+    </script>
+</body>
+</html>

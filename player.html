@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tela do Jogador</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-zinc-950 text-zinc-50 min-h-screen flex items-center justify-center p-4">
+
+    <div class="w-full max-w-5xl aspect-video border border-zinc-800 bg-zinc-900/20 rounded-xl overflow-hidden flex items-center justify-center relative">
+        <div id="placeholderText" class="text-zinc-600 text-xs uppercase tracking-widest absolute">
+            Aguardando transmissão do mestre...
+        </div>
+        <video id="playerVideo" autoplay class="w-full h-full object-contain hidden"></video>
+        <img id="playerImage" class="w-full h-full object-contain hidden" alt="Cenário">
+    </div>
+
+    <script src="http://localhost:3000/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io('http://localhost:3000');
+        const urlParams = new URLSearchParams(window.location.search);
+        const roomId = urlParams.get('room') || 'sala-secreta-123';
+
+        socket.emit('join-room', roomId, 'player');
+
+        socket.on('audio-command', (data) => {
+            if (data.type === 'sfx') {
+                const audio = new Audio(data.url);
+                audio.play().catch(e => console.log("Áudio bloqueado pelo navegador. Interaja com a página antes."));
+            }
+        });
+
+        socket.on('update-image', (url) => {
+            document.getElementById('placeholderText').style.display = 'none';
+            document.getElementById('playerVideo').classList.add('hidden');
+            
+            const img = document.getElementById('playerImage');
+            img.src = url;
+            img.classList.remove('hidden');
+        });
+    </script>
+</body>
+</html>

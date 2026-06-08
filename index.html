@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VTT AudioSync</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-zinc-950 text-zinc-50 flex items-center justify-center min-h-screen p-4">
+
+    <div class="max-w-md w-full border border-zinc-800 bg-zinc-900/50 p-8 rounded-xl backdrop-blur-sm text-center">
+        <h1 class="text-2xl font-light tracking-widest text-zinc-200 uppercase mb-2">VTT AudioSync</h1>
+        <p class="text-xs text-zinc-500 tracking-wider uppercase mb-8">Sincronização Audiovisual de RPG</p>
+        
+        <div class="space-y-4">
+            <a href="gm.html" class="block w-full py-3 px-4 border border-zinc-700 bg-zinc-900 hover:bg-zinc-800 text-sm font-medium tracking-wide rounded-md transition duration-200 ease-in-out">
+                Entrar como Mestre
+            </a>
+            
+            <div class="relative flex py-2 items-center">
+                <div class="flex-grow border-t border-zinc-800"></div>
+                <span class="flex-shrink mx-4 text-xs text-zinc-600 uppercase tracking-widest">ou</span>
+                <div class="flex-grow border-t border-zinc-800"></div>
+            </div>
+
+            <div class="space-y-2">
+                <input type="text" id="roomInput" placeholder="Código da Sala" class="w-full bg-zinc-950 border border-zinc-800 rounded-md py-2.5 px-4 text-sm text-zinc-300 placeholder-zinc-600 focus:outline-none focus:border-zinc-600 text-center tracking-wider">
+                <button onclick="joinAsPlayer()" class="w-full py-2.5 px-4 bg-zinc-100 hover:bg-zinc-200 text-zinc-950 text-sm font-medium tracking-wide rounded-md transition duration-200 ease-in-out">
+                    Entrar como Jogador
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function joinAsPlayer() {
+            const room = document.getElementById('roomInput').value.trim();
+            if (room) {
+                window.location.href = `player.html?room=${room}`;
+            } else {
+                alert('Por favor, digite o código da sala.');
+            }
+        }
+    </script>
+</body>
+</html>

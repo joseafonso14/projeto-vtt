@@ -7,7 +7,8 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server, { cors: { origin: '*' } });
 
-app.use(express.static('public')); // Onde ficarão seus arquivos HTML/JS
+// Altere no seu server.js de app.use(express.static('public')) para:
+app.use(express.static(__dirname)); 
 
 io.on('connection', (socket) => {
     console.log('Um usuário conectou:', socket.id);
